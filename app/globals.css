@@ -27,7 +27,7 @@ body {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
 }
 
@@ -159,7 +159,6 @@ button:hover {
 
 /* Feedback Form Styles */
 .feedback-form {
-  position: fixed;
   bottom: 20px;
   right: 20px;
   background: #fff;

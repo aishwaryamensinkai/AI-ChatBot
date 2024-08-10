@@ -13,6 +13,10 @@ const HomePage = () => {
     setShowChatbot(true);
   };
 
+  const handleBack = () => {
+    setShowChatbot(false);
+  };
+
   return (
     <ClerkProvider>
       <SignedOut>
@@ -31,10 +35,10 @@ const HomePage = () => {
               onSelectLanguage={setSelectedLanguage}
             />
           ) : (
-            <Chatbot selectedLanguage={selectedLanguage} />
+            <Chatbot selectedLanguage={selectedLanguage} onBack={handleBack} />
           )}
         </div>
-        <UserButton />
+        {/* <UserButton /> */}
       </SignedIn>
     </ClerkProvider>
   );
