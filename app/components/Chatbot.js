@@ -21,14 +21,18 @@ const Chatbot = ({ selectedLanguage }) => {
   const [input, setInput] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState(0);
-  const [isMicActive, setIsMicActive] = useState(false); // New state to track mic status
+  const [isMicActive, setIsMicActive] = useState(false);
 
   useEffect(() => {
     const fetchGreeting = async () => {
       const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "", language: selectedLanguage }),
+        body: JSON.stringify({
+          message: "",
+          language: selectedLanguage,
+          isFirstMessage: true,
+        }),
       });
       const data = await response.json();
       setMessages([{ text: data.response, user: false }]);
@@ -45,7 +49,11 @@ const Chatbot = ({ selectedLanguage }) => {
     const response = await fetch("/api/chatbot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input, language: selectedLanguage }),
+      body: JSON.stringify({
+        message: input,
+        language: selectedLanguage,
+        isFirstMessage: messages.length === 0, // Check if it's the first message
+      }),
     });
     const data = await response.json();
     setMessages([
@@ -85,22 +93,22 @@ const Chatbot = ({ selectedLanguage }) => {
   const handleMicClick = () => {
     if (!recognition) return;
 
-    setIsMicActive(true); // Mic is active
+    setIsMicActive(true);
     recognition.start();
 
     recognition.onresult = (event) => {
       const speechResult = event.results[0][0].transcript;
       setInput(speechResult);
-      setIsMicActive(false); // Mic is off after getting result
+      setIsMicActive(false);
     };
 
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
-      setIsMicActive(false); // Mic is off if there's an error
+      setIsMicActive(false);
     };
 
     recognition.onend = () => {
-      setIsMicActive(false); // Mic is off when recognition ends
+      setIsMicActive(false);
     };
   };
 
@@ -132,7 +140,7 @@ const Chatbot = ({ selectedLanguage }) => {
         >
           <FontAwesomeIcon
             icon={faMicrophone}
-            color={isMicActive ? "red" : "black"} // Changes color when active
+            color={isMicActive ? "red" : "black"}
           />
         </button>
         <button type="submit">
