@@ -1,14 +1,28 @@
-// app/components/Chatbot.js
 import React, { useState, useEffect, useCallback } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophone, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+
 let feedbackTimer;
+let recognition;
+
+if (typeof window !== "undefined") {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+  }
+}
 
 const Chatbot = ({ selectedLanguage }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState(0);
+  const [isMicActive, setIsMicActive] = useState(false); // New state to track mic status
 
-  // Function to fetch greeting
   useEffect(() => {
     const fetchGreeting = async () => {
       const response = await fetch("/api/chatbot", {
@@ -23,7 +37,6 @@ const Chatbot = ({ selectedLanguage }) => {
     fetchGreeting();
   }, [selectedLanguage]);
 
-  // Handle user input submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessages([...messages, { text: input, user: true }]);
@@ -41,20 +54,17 @@ const Chatbot = ({ selectedLanguage }) => {
       { text: data.response, user: false },
     ]);
 
-    // Reset feedback timer
     resetFeedbackTimer();
   };
 
-  // Start feedback timer
   const startFeedbackTimer = useCallback(() => {
     setShowFeedback(false);
     const timer = setTimeout(() => {
       setShowFeedback(true);
-    }, 120000); // 2 minutes
+    }, 120000);
     return timer;
   }, []);
 
-  // Reset feedback timer
   const resetFeedbackTimer = useCallback(() => {
     if (feedbackTimer) {
       clearTimeout(feedbackTimer);
@@ -62,16 +72,36 @@ const Chatbot = ({ selectedLanguage }) => {
     feedbackTimer = startFeedbackTimer();
   }, [startFeedbackTimer]);
 
-  // Set feedback timer on mount and reset on update
   useEffect(() => {
     let feedbackTimer = startFeedbackTimer();
     return () => clearTimeout(feedbackTimer);
   }, [startFeedbackTimer]);
 
-  // Handle feedback submission
   const handleFeedbackSubmit = () => {
     console.log("User feedback:", feedback);
     setShowFeedback(false);
+  };
+
+  const handleMicClick = () => {
+    if (!recognition) return;
+
+    setIsMicActive(true); // Mic is active
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const speechResult = event.results[0][0].transcript;
+      setInput(speechResult);
+      setIsMicActive(false); // Mic is off after getting result
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsMicActive(false); // Mic is off if there's an error
+    };
+
+    recognition.onend = () => {
+      setIsMicActive(false); // Mic is off when recognition ends
+    };
   };
 
   return (
@@ -95,7 +125,19 @@ const Chatbot = ({ selectedLanguage }) => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
         />
-        <button type="submit">Send</button>
+        <button
+          type="button"
+          onClick={handleMicClick}
+          className={isMicActive ? "mic-active" : ""}
+        >
+          <FontAwesomeIcon
+            icon={faMicrophone}
+            color={isMicActive ? "red" : "black"} // Changes color when active
+          />
+        </button>
+        <button type="submit">
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
       </form>
       {showFeedback && (
         <div className="feedback-form">
