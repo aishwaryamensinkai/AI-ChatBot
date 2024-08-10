@@ -1,6 +1,9 @@
+// app/components/Chatbot.js
 import React, { useState, useEffect, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophone, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import "../css/Chatbot.css";
 
 let feedbackTimer;
 let recognition;
@@ -114,6 +117,15 @@ const Chatbot = ({ selectedLanguage }) => {
 
   return (
     <div className="chatbot-container">
+      <nav className="navbar">
+        <h1 className="logo">AI Support Center</h1>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </nav>
       <div className="messages">
         {messages.map((msg, index) => (
           <div

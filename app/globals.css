@@ -126,22 +126,6 @@ button:hover {
   color: #666666;
 }
 
-.landing-page button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 20px;
-  background-color: #007bff;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.landing-page button:hover {
-  background-color: #0056b3;
-}
-
 .language-selector {
   margin: 20px 0;
   display: flex;
@@ -214,7 +198,7 @@ button {
   align-items: center;
   background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
   min-height: 100vh;
-  padding: 20px;
+  padding: 0px;
   box-sizing: border-box;
   transition: background 0.3s ease-in-out;
 }
@@ -239,7 +223,7 @@ button {
   padding: 12px 24px;
   border: none;
   border-radius: 25px;
-  background-color: #007bff;
+  background-color: black;
   color: #ffffff;
   cursor: pointer;
   font-size: 16px;
@@ -248,7 +232,7 @@ button {
 }
 
 .landing-page button:hover {
-  background-color: #0056b3;
+  background-color: black;
 }
 
 /* Navbar Styles */
