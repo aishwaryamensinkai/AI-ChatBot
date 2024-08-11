@@ -44,7 +44,8 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         }),
       });
       const data = await response.json();
-      setMessages([{ text: data.response, user: false }]);
+      const timestamp = new Date().toLocaleString();
+      setMessages([{ text: data.response, user: false, timestamp }]);
       setSuggestedQuestions(data.suggestedQuestions || []);
     };
 
@@ -55,7 +56,11 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
     event.preventDefault();
     if (!input.trim()) return; // Prevent submission of empty messages
 
-    setMessages([...messages, { text: input, user: true }]);
+    const userTimestamp = new Date().toLocaleString();
+    setMessages([
+      ...messages,
+      { text: input, user: true, timestamp: userTimestamp },
+    ]);
     setInput("");
 
     const response = await fetch("/api/chatbot", {
@@ -68,11 +73,12 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
       }),
     });
     const data = await response.json();
+    const botTimestamp = new Date().toLocaleString();
 
     setMessages([
       ...messages,
-      { text: input, user: true },
-      { text: data.response, user: false },
+      { text: input, user: true, timestamp: userTimestamp },
+      { text: data.response, user: false, timestamp: botTimestamp },
     ]);
     setSuggestedQuestions(data.suggestedQuestions || []);
     resetFeedbackTimer();
@@ -160,6 +166,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
             }`}
           >
             {msg.text}
+            <div className="timestamp">{msg.timestamp}</div>
           </div>
         ))}
         {suggestedQuestions.length > 0 && (

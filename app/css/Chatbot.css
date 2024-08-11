@@ -95,3 +95,10 @@
 .suggestion-button:hover {
   background-color: #0056b3;
 }
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #888;
+  text-align: right;
+  margin-top: 5px;
+}
