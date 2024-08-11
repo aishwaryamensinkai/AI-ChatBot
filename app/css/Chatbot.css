@@ -73,3 +73,25 @@
 .end-chat-button.glow {
   box-shadow: 0 0 10px #007bff;
 }
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.suggestion-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+}
+
+.suggestion-button:hover {
+  background-color: #0056b3;
+}

@@ -28,8 +28,8 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState(0);
   const [isMicActive, setIsMicActive] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState([]);
 
-  // Ref for the messages container
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -45,6 +45,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
       });
       const data = await response.json();
       setMessages([{ text: data.response, user: false }]);
+      setSuggestedQuestions(data.suggestedQuestions || []);
     };
 
     fetchGreeting();
@@ -52,6 +53,8 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!input.trim()) return; // Prevent submission of empty messages
+
     setMessages([...messages, { text: input, user: true }]);
     setInput("");
 
@@ -65,12 +68,13 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
       }),
     });
     const data = await response.json();
+
     setMessages([
       ...messages,
       { text: input, user: true },
       { text: data.response, user: false },
     ]);
-
+    setSuggestedQuestions(data.suggestedQuestions || []);
     resetFeedbackTimer();
   };
 
@@ -95,7 +99,6 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
   }, [startFeedbackTimer]);
 
   useEffect(() => {
-    // Scroll to the bottom of the messages container when messages change
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -104,7 +107,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
   const handleFeedbackSubmit = () => {
     console.log("User feedback:", feedback);
     setShowFeedback(false);
-    onBack(); // Navigate back to the landing page
+    onBack();
   };
 
   const handleMicClick = () => {
@@ -127,6 +130,11 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
     recognition.onend = () => {
       setIsMicActive(false);
     };
+  };
+
+  const handleSuggestedQuestionClick = (question) => {
+    setInput(question);
+    handleSubmit(new Event("submit")); // Trigger form submission programmatically
   };
 
   return (
@@ -154,7 +162,19 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
             {msg.text}
           </div>
         ))}
-        {/* Add a dummy element to scroll to */}
+        {suggestedQuestions.length > 0 && (
+          <div className="suggestions">
+            {suggestedQuestions.map((question, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestedQuestionClick(question)}
+                className="suggestion-button"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSubmit}>

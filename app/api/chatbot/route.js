@@ -3,7 +3,6 @@ import { OpenAI } from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
 export async function POST(req) {
   const { message, language, isFirstMessage } = await req.json();
 
@@ -22,8 +21,18 @@ export async function POST(req) {
     ],
   });
 
+  const suggestedQuestions = [
+    "How can I reset my password?",
+    "What do I do if I encounter an error message?",
+    "How do I configure the installation settings?",
+    "How can I resolve network connectivity issues?",
+  ];
+
   return new Response(
-    JSON.stringify({ response: response.choices[0].message.content }),
+    JSON.stringify({
+      response: response.choices[0].message.content,
+      suggestedQuestions,
+    }),
     {
       headers: { "Content-Type": "application/json" },
     }
