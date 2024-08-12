@@ -40,24 +40,35 @@ const SmallChatbot = ({ onClose }) => {
     ]);
     setInput("");
 
-    const response = await fetch("/api/smallchatbot", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: input,
-        language: "en",
-        isFirstMessage: messages.length === 0,
-      }),
-    });
+    try {
+      const response = await fetch("/api/orchestrator", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "smallchatbot",
+          message: input,
+        }),
+      });
 
-    const data = await response.json();
-    const botTimestamp = new Date().toLocaleTimeString();
+      const data = await response.json();
+      const botTimestamp = new Date().toLocaleTimeString();
 
-    setMessages([
-      ...messages,
-      { text: input, user: true, timestamp: userTimestamp },
-      { text: data.response, user: false, timestamp: botTimestamp },
-    ]);
+      setMessages([
+        ...messages,
+        { text: input, user: true, timestamp: userTimestamp },
+        { text: data.response, user: false, timestamp: botTimestamp },
+      ]);
+    } catch (error) {
+      console.error("Error fetching from orchestrator:", error);
+      setMessages([
+        ...messages,
+        {
+          text: "Sorry, something went wrong. Please try again later.",
+          user: false,
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+    }
   };
 
   return (

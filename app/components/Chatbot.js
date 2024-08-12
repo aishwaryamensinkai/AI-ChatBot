@@ -34,10 +34,11 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      const response = await fetch("/api/chatbot", {
+      const response = await fetch("/api/orchestrator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          model: "chatbot",
           message: "",
           language: selectedLanguage,
           isFirstMessage: true,
@@ -54,7 +55,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!input.trim()) return; // Prevent submission of empty messages
+    if (!input.trim()) return;
 
     const userTimestamp = new Date().toLocaleString();
     setMessages([
@@ -63,10 +64,11 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
     ]);
     setInput("");
 
-    const response = await fetch("/api/chatbot", {
+    const response = await fetch("/api/orchestrator", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "chatbot",
         message: input,
         language: selectedLanguage,
         isFirstMessage: messages.length === 0,
@@ -140,7 +142,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
 
   const handleSuggestedQuestionClick = (question) => {
     setInput(question);
-    handleSubmit(new Event("submit")); // Trigger form submission programmatically
+    handleSubmit(new Event("submit"));
   };
 
   return (
@@ -189,39 +191,34 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type a message"
         />
+        <button type="submit" className="send-button">
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
         <button
           type="button"
           onClick={handleMicClick}
-          className={isMicActive ? "mic-active" : ""}
+          className={`mic-button ${isMicActive ? "active" : ""}`}
         >
-          <FontAwesomeIcon
-            icon={faMicrophone}
-            color={isMicActive ? "red" : "black"}
-          />
-        </button>
-        <button type="submit">
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <FontAwesomeIcon icon={faMicrophone} />
         </button>
       </form>
       {showFeedback && (
-        <div className="feedback-overlay">
-          <div className="feedback-form">
-            <h3>Rate the chatbot</h3>
-            <div className="stars">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={`star ${feedback >= star ? "filled" : ""}`}
-                  onClick={() => setFeedback(star)}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-            <button onClick={handleFeedbackSubmit}>Submit Feedback</button>
-          </div>
+        <div className="feedback">
+          <h3>Was this answer helpful?</h3>
+          <button onClick={() => setFeedback(1)} className="feedback-button">
+            Yes
+          </button>
+          <button onClick={() => setFeedback(0)} className="feedback-button">
+            No
+          </button>
+          <button
+            onClick={handleFeedbackSubmit}
+            className="submit-feedback-button"
+          >
+            Submit
+          </button>
         </div>
       )}
     </div>
