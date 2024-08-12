@@ -9,17 +9,14 @@ const SmallChatbot = ({ onClose }) => {
   const [timeLeft, setTimeLeft] = useState(90); // Timer starts at 90 seconds
 
   useEffect(() => {
-    // Update the timer every second
     const interval = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
-    // Set a timer to close the chatbot after 90 seconds
     const timeout = setTimeout(() => {
       onClose();
     }, 90000); // 90 seconds in milliseconds
 
-    // Clean up the interval and timeout if the component is unmounted
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
@@ -27,7 +24,6 @@ const SmallChatbot = ({ onClose }) => {
   }, [onClose]);
 
   useEffect(() => {
-    // Close the chatbot if timeLeft reaches 0
     if (timeLeft <= 0) {
       onClose();
     }
@@ -35,7 +31,7 @@ const SmallChatbot = ({ onClose }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!input.trim()) return; // Prevent submission of empty messages
+    if (!input.trim()) return;
 
     const userTimestamp = new Date().toLocaleTimeString();
     setMessages([
@@ -44,7 +40,7 @@ const SmallChatbot = ({ onClose }) => {
     ]);
     setInput("");
 
-    const response = await fetch("/api/chatbot", {
+    const response = await fetch("/api/smallchatbot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
