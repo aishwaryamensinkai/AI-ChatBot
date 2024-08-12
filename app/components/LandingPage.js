@@ -1,10 +1,17 @@
 // app/components/LandingPage.js
-import React from "react";
+import React, { useState } from "react";
 import LanguageSelector from "./LanguageSelector";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import SmallChatbot from "./SmallChatbot";
 import "../css/LandingPage.css";
 
 const LandingPage = ({ onStartChat, selectedLanguage, onSelectLanguage }) => {
+  const [showSmallChatbot, setShowSmallChatbot] = useState(false);
+
+  const handleSmallChatbotToggle = () => {
+    setShowSmallChatbot((prev) => !prev);
+  };
+
   return (
     <div className="landing-page">
       <nav className="navbar">
@@ -35,7 +42,20 @@ const LandingPage = ({ onStartChat, selectedLanguage, onSelectLanguage }) => {
           />
         </div>
         <SignedOut>
-          <p>Sign in to start using the AI</p>
+          <p>
+            Sign in to unlock the future experience the power of AI
+            <br />
+            Use our free trial today!
+          </p>
+          <button
+            className="toggle-small-chatbot"
+            onClick={handleSmallChatbotToggle}
+          >
+            {showSmallChatbot ? "Close Chat" : "Open Chat"}
+          </button>
+          {showSmallChatbot && (
+            <SmallChatbot onClose={handleSmallChatbotToggle} />
+          )}
         </SignedOut>
         <SignedIn>
           <button onClick={onStartChat}>Start Chat</button>

@@ -24,3 +24,37 @@
 button {
   margin-top: 20px;
 }
+
+.landing-page button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  background-color: black;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.landing-page button:hover {
+  background-color: black;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #007bff;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button {
+  margin-top: 10px;
+}
