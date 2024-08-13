@@ -6,7 +6,7 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 const SmallChatbot = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [timeLeft, setTimeLeft] = useState(90); // Timer starts at 90 seconds
+  const [timeLeft, setTimeLeft] = useState(90);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15,7 +15,7 @@ const SmallChatbot = ({ onClose }) => {
 
     const timeout = setTimeout(() => {
       onClose();
-    }, 90000); // 90 seconds in milliseconds
+    }, 90000);
 
     return () => {
       clearInterval(interval);
@@ -40,35 +40,24 @@ const SmallChatbot = ({ onClose }) => {
     ]);
     setInput("");
 
-    try {
-      const response = await fetch("/api/orchestrator", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "smallchatbot",
-          message: input,
-        }),
-      });
+    const response = await fetch("/api/smallchatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: input,
+        language: "en",
+        isFirstMessage: messages.length === 0,
+      }),
+    });
 
-      const data = await response.json();
-      const botTimestamp = new Date().toLocaleTimeString();
+    const data = await response.json();
+    const botTimestamp = new Date().toLocaleTimeString();
 
-      setMessages([
-        ...messages,
-        { text: input, user: true, timestamp: userTimestamp },
-        { text: data.response, user: false, timestamp: botTimestamp },
-      ]);
-    } catch (error) {
-      console.error("Error fetching from orchestrator:", error);
-      setMessages([
-        ...messages,
-        {
-          text: "Sorry, something went wrong. Please try again later.",
-          user: false,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ]);
-    }
+    setMessages([
+      ...messages,
+      { text: input, user: true, timestamp: userTimestamp },
+      { text: data.response, user: false, timestamp: botTimestamp },
+    ]);
   };
 
   return (

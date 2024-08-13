@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -37,11 +36,10 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      const response = await fetch("/api/orchestrator", {
+      const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "chatbot",
           message: "",
           language: selectedLanguage,
           isFirstMessage: true,
@@ -67,11 +65,10 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
     ]);
     setInput("");
 
-    const response = await fetch("/api/orchestrator", {
+    const response = await fetch("/api/chatbot", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "chatbot",
         message: input,
         language: selectedLanguage,
         isFirstMessage: messages.length === 0,
@@ -121,7 +118,6 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         feedback: feedback,
         timestamp: serverTimestamp(),
       });
-      // console.log("Feedback saved to Firebase!");
     } catch (error) {
       console.error("Error saving feedback:", error);
     }
@@ -162,10 +158,7 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         <button onClick={onBack} className="back-button">
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <h1 className="logo">
-          ConversAI
-          {/* <img src="../ConversAI.png" alt="ConversAI Logo" /> */}
-        </h1>
+        <h1 className="logo">ConversAI</h1>
         <SignedOut>
           <SignInButton />
         </SignedOut>
