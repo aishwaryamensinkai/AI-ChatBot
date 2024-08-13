@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,6 +7,8 @@ import {
   faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../lib/firebaseConfig";
 import "../css/Chatbot.css";
 
 let feedbackTimer;
@@ -112,8 +115,16 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
     }
   }, [messages]);
 
-  const handleFeedbackSubmit = () => {
-    console.log("User feedback:", feedback);
+  const handleFeedbackSubmit = async () => {
+    try {
+      await addDoc(collection(db, "feedback"), {
+        feedback: feedback,
+        timestamp: serverTimestamp(),
+      });
+      // console.log("Feedback saved to Firebase!");
+    } catch (error) {
+      console.error("Error saving feedback:", error);
+    }
     setShowFeedback(false);
     onBack();
   };
@@ -151,7 +162,9 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         <button onClick={onBack} className="back-button">
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        <h1 className="logo">AI Support Center</h1>
+        {/* <h1 className="logo"> */}
+        <img src="../ConversAI.png" alt="ConversAI Logo" />
+        {/* </h1> */}
         <SignedOut>
           <SignInButton />
         </SignedOut>
@@ -205,20 +218,22 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         </button>
       </form>
       {showFeedback && (
-        <div className="feedback">
-          <h3>Was this answer helpful?</h3>
-          <button onClick={() => setFeedback(1)} className="feedback-button">
-            Yes
-          </button>
-          <button onClick={() => setFeedback(0)} className="feedback-button">
-            No
-          </button>
-          <button
-            onClick={handleFeedbackSubmit}
-            className="submit-feedback-button"
-          >
-            Submit
-          </button>
+        <div className="feedback-overlay">
+          <div className="feedback-form">
+            <h3>Rate the chatbot</h3>
+            <div className="stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`star ${feedback >= star ? "filled" : ""}`}
+                  onClick={() => setFeedback(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <button onClick={handleFeedbackSubmit}>Submit Feedback</button>
+          </div>
         </div>
       )}
     </div>

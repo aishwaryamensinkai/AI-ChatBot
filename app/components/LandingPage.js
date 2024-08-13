@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 // app/components/LandingPage.js
 import React, { useState } from "react";
 import LanguageSelector from "./LanguageSelector";
@@ -15,7 +16,9 @@ const LandingPage = ({ onStartChat, selectedLanguage, onSelectLanguage }) => {
   return (
     <div className="landing-page">
       <nav className="navbar">
-        <h1 className="logo">AI Support Center</h1>
+        {/* <h1 className="logo">ConversAI</h1> */}
+        <img src="../ConversAI.png" alt="ConversAI Logo" height={"100px"} />
+
         <SignedOut>
           <SignInButton />
         </SignedOut>
