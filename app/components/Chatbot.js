@@ -162,9 +162,10 @@ const Chatbot = ({ selectedLanguage, onBack }) => {
         <button onClick={onBack} className="back-button">
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-        {/* <h1 className="logo"> */}
-        <img src="../ConversAI.png" alt="ConversAI Logo" />
-        {/* </h1> */}
+        <h1 className="logo">
+          ConversAI
+          {/* <img src="../ConversAI.png" alt="ConversAI Logo" /> */}
+        </h1>
         <SignedOut>
           <SignInButton />
         </SignedOut>

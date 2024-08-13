@@ -84,6 +84,7 @@
   display: flex;
   border-top: 1px solid #ddd;
   background-color: #fff;
+  padding: 0px !important;
 }
 
 .chatbot-input {

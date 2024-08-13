@@ -1,3 +1,4 @@
+"use client";
 // app/chatbot/page.js
 import React from "react";
 import Chatbot from "../components/Chatbot";
