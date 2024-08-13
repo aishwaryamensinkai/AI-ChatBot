@@ -1,0 +1,113 @@
+.small-chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+  height: 500px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+.small-chatbot-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: relative;
+}
+
+.close-chatbot {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  font-size: 1.5em;
+  padding: 4px;
+  cursor: pointer;
+  position: absolute;
+  top: -11px;
+  right: 5px;
+  border-radius: 50%;
+}
+
+.close-chatbot:hover {
+  background-color: #e60000;
+}
+
+.small-chatbot-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.small-chatbot-user-message,
+.small-chatbot-bot-message {
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.small-chatbot-user-message {
+  background-color: #d1ecf1;
+  align-self: flex-end;
+  position: relative;
+  text-align: left !important;
+}
+
+.small-chatbot-bot-message {
+  background-color: #e2e3e5;
+  align-self: flex-start;
+  position: relative;
+  text-align: left !important;
+}
+
+.message-text {
+  word-wrap: break-word;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.small-chatbot-form {
+  display: flex;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.chatbot-input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+  outline: none;
+}
+
+.chatbot-send-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.small-chatbot-timer {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}

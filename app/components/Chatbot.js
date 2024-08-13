@@ -1,6 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
+/* eslint-disable @next/next/no-img-element */
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMicrophone,
+  faPaperPlane,
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../lib/firebaseConfig";
+import "../css/Chatbot.css";
 
 let feedbackTimer;
 let recognition;
@@ -16,26 +25,32 @@ if (typeof window !== "undefined") {
   }
 }
 
-const Chatbot = ({ selectedLanguage }) => {
+const Chatbot = ({ selectedLanguage, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState(0);
   const [isMicActive, setIsMicActive] = useState(false);
+  const [suggestedQuestions, setSuggestedQuestions] = useState([]);
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const fetchGreeting = async () => {
-      const response = await fetch("/api/chatbot", {
+      const response = await fetch("/api/orchestrator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          model: "chatbot",
           message: "",
           language: selectedLanguage,
           isFirstMessage: true,
         }),
       });
       const data = await response.json();
-      setMessages([{ text: data.response, user: false }]);
+      const timestamp = new Date().toLocaleString();
+      setMessages([{ text: data.response, user: false, timestamp }]);
+      setSuggestedQuestions(data.suggestedQuestions || []);
     };
 
     fetchGreeting();
@@ -43,25 +58,34 @@ const Chatbot = ({ selectedLanguage }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setMessages([...messages, { text: input, user: true }]);
+    if (!input.trim()) return;
+
+    const userTimestamp = new Date().toLocaleString();
+    setMessages([
+      ...messages,
+      { text: input, user: true, timestamp: userTimestamp },
+    ]);
     setInput("");
 
-    const response = await fetch("/api/chatbot", {
+    const response = await fetch("/api/orchestrator", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: "chatbot",
         message: input,
         language: selectedLanguage,
-        isFirstMessage: messages.length === 0, // Check if it's the first message
+        isFirstMessage: messages.length === 0,
       }),
     });
     const data = await response.json();
+    const botTimestamp = new Date().toLocaleString();
+
     setMessages([
       ...messages,
-      { text: input, user: true },
-      { text: data.response, user: false },
+      { text: input, user: true, timestamp: userTimestamp },
+      { text: data.response, user: false, timestamp: botTimestamp },
     ]);
-
+    setSuggestedQuestions(data.suggestedQuestions || []);
     resetFeedbackTimer();
   };
 
@@ -85,9 +109,24 @@ const Chatbot = ({ selectedLanguage }) => {
     return () => clearTimeout(feedbackTimer);
   }, [startFeedbackTimer]);
 
-  const handleFeedbackSubmit = () => {
-    console.log("User feedback:", feedback);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const handleFeedbackSubmit = async () => {
+    try {
+      await addDoc(collection(db, "feedback"), {
+        feedback: feedback,
+        timestamp: serverTimestamp(),
+      });
+      // console.log("Feedback saved to Firebase!");
+    } catch (error) {
+      console.error("Error saving feedback:", error);
+    }
     setShowFeedback(false);
+    onBack();
   };
 
   const handleMicClick = () => {
@@ -112,8 +151,27 @@ const Chatbot = ({ selectedLanguage }) => {
     };
   };
 
+  const handleSuggestedQuestionClick = (question) => {
+    setInput(question);
+    handleSubmit(new Event("submit"));
+  };
+
   return (
     <div className="chatbot-container">
+      <nav className="navbar">
+        <button onClick={onBack} className="back-button">
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+        {/* <h1 className="logo"> */}
+        <img src="../ConversAI.png" alt="ConversAI Logo" />
+        {/* </h1> */}
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </nav>
       <div className="messages">
         {messages.map((msg, index) => (
           <div
@@ -123,45 +181,59 @@ const Chatbot = ({ selectedLanguage }) => {
             }`}
           >
             {msg.text}
+            <div className="timestamp">{msg.timestamp}</div>
           </div>
         ))}
+        {suggestedQuestions.length > 0 && (
+          <div className="suggestions">
+            {suggestedQuestions.map((question, index) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestedQuestionClick(question)}
+                className="suggestion-button"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type a message"
         />
+        <button type="submit" className="send-button">
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
         <button
           type="button"
           onClick={handleMicClick}
-          className={isMicActive ? "mic-active" : ""}
+          className={`mic-button ${isMicActive ? "active" : ""}`}
         >
-          <FontAwesomeIcon
-            icon={faMicrophone}
-            color={isMicActive ? "red" : "black"}
-          />
-        </button>
-        <button type="submit">
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <FontAwesomeIcon icon={faMicrophone} />
         </button>
       </form>
       {showFeedback && (
-        <div className="feedback-form">
-          <h3>Rate the chatbot</h3>
-          <div className="stars">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={`star ${feedback >= star ? "filled" : ""}`}
-                onClick={() => setFeedback(star)}
-              >
-                ★
-              </span>
-            ))}
+        <div className="feedback-overlay">
+          <div className="feedback-form">
+            <h3>Rate the chatbot</h3>
+            <div className="stars">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`star ${feedback >= star ? "filled" : ""}`}
+                  onClick={() => setFeedback(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <button onClick={handleFeedbackSubmit}>Submit Feedback</button>
           </div>
-          <button onClick={handleFeedbackSubmit}>Submit Feedback</button>
         </div>
       )}
     </div>

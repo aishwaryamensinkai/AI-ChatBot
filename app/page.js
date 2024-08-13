@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import LandingPage from "./components/LandingPage";
 import Chatbot from "./components/Chatbot";
+import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const HomePage = () => {
   const [showChatbot, setShowChatbot] = useState(false);
@@ -12,18 +13,34 @@ const HomePage = () => {
     setShowChatbot(true);
   };
 
+  const handleBack = () => {
+    setShowChatbot(false);
+  };
+
   return (
-    <div>
-      {!showChatbot ? (
+    <ClerkProvider>
+      <SignedOut>
         <LandingPage
           onStartChat={handleChatStart}
           selectedLanguage={selectedLanguage}
-          onSelectLanguage={setSelectedLanguage} // Make sure this is passed as a function
+          onSelectLanguage={setSelectedLanguage}
         />
-      ) : (
-        <Chatbot selectedLanguage={selectedLanguage} />
-      )}
-    </div>
+      </SignedOut>
+      <SignedIn>
+        <div>
+          {!showChatbot ? (
+            <LandingPage
+              onStartChat={handleChatStart}
+              selectedLanguage={selectedLanguage}
+              onSelectLanguage={setSelectedLanguage}
+            />
+          ) : (
+            <Chatbot selectedLanguage={selectedLanguage} onBack={handleBack} />
+          )}
+        </div>
+        {/* <UserButton /> */}
+      </SignedIn>
+    </ClerkProvider>
   );
 };
 

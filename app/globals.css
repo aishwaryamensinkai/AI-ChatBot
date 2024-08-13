@@ -27,7 +27,7 @@ body {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
 }
 
@@ -91,21 +91,6 @@ input {
   margin-right: 12px;
 }
 
-button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 20px;
-  background-color: #007bff;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
 /* LandingPage Styles */
 .landing-page {
   text-align: center;
@@ -124,22 +109,6 @@ button:hover {
 .landing-page p {
   font-size: 1.2rem;
   color: #666666;
-}
-
-.landing-page button {
-  margin-top: 20px;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 20px;
-  background-color: #007bff;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.landing-page button:hover {
-  background-color: #0056b3;
 }
 
 .language-selector {
@@ -175,7 +144,6 @@ button:hover {
 
 /* Feedback Form Styles */
 .feedback-form {
-  position: fixed;
   bottom: 20px;
   right: 20px;
   background: #fff;
@@ -203,9 +171,6 @@ button:hover {
   color: #f39c12;
 }
 
-button {
-  margin-top: 10px;
-}
 
 /* LandingPage Styles */
 .landing-page {
@@ -214,7 +179,7 @@ button {
   align-items: center;
   background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
   min-height: 100vh;
-  padding: 20px;
+  padding: 0px;
   box-sizing: border-box;
   transition: background 0.3s ease-in-out;
 }
@@ -233,22 +198,6 @@ button {
   line-height: 1.6;
   margin-bottom: 20px;
   animation: fadeIn 2s ease-out;
-}
-
-.landing-page button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 25px;
-  background-color: #007bff;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-  animation: fadeIn 2.5s ease-out;
-}
-
-.landing-page button:hover {
-  background-color: #0056b3;
 }
 
 /* Navbar Styles */
